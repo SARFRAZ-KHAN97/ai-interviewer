@@ -1,12 +1,17 @@
-import 'dotenv/config'
+import { config } from 'dotenv'
+import { expand } from 'dotenv-expand'
 import { z } from 'zod'
+
+expand(config())
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
   CLIENT_URL: z.url().default('http://localhost:5173'),
 
-  MONGODB_URI: z.string().min(1, 'MONGODB_URI is required'),
+  DB_USERNAME: z.string().min(1, 'DB_USERNAME is required'),
+  DB_PASSWORD: z.string().min(1, 'DB_PASSWORD is required'),
+  MONGODB_URI: z.string().startsWith('mongodb', 'MONGODB_URI must be a MongoDB connection string'),
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().min(1).default('1d'),
 
