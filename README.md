@@ -1,4 +1,4 @@
-# AI Interviewer
+# SkillTrace
 
 Upload a resume, run an AI-led mock interview (voice + video in browser), and get a detailed performance report.
 
