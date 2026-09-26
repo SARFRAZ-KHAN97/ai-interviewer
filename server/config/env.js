@@ -13,9 +13,11 @@ const envSchema = z.object({
   DB_PASSWORD: z.string().min(1, 'DB_PASSWORD is required'),
   MONGODB_URI: z.string().startsWith('mongodb', 'MONGODB_URI must be a MongoDB connection string'),
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
-  JWT_EXPIRES_IN: z.string().min(1).default('1d'),
+  JWT_EXPIRES_IN: z.coerce.number().int().positive().default(86400),
 
   GEMINI_API_KEY: z.string().default(''),
+  GEMINI_MODEL: z.string().min(1).default('gemini-3.8-flash'),
+  AI_RATE_LIMIT: z.coerce.number().int().positive().default(10),
 })
 
 const result = envSchema.safeParse(process.env)

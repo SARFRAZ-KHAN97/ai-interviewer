@@ -26,6 +26,7 @@ export const errorHandler = (err, req, res, _next) => {
     error: {
       message,
       code: errorCode,
+      ...(err.details && { details: err.details }),
       ...(env.NODE_ENV !== 'production' && { stack: err.stack }),
     },
   })

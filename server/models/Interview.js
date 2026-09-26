@@ -123,6 +123,10 @@ const interviewSchema = new mongoose.Schema(
       type: [answerSchema],
       default: [],
     },
+    report: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Report',
+    },
     currentQuestionIndex: {
       type: Number,
       default: 0,
