@@ -139,9 +139,9 @@ export default function InterviewNew() {
 
         <form
           onSubmit={handleSubmit}
-          className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]"
+          className="mt-8 grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]"
         >
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <div className="card p-6">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white">
@@ -416,7 +416,7 @@ export default function InterviewNew() {
             </div>
           </div>
 
-          <aside className="lg:sticky lg:top-24">
+          <aside className="min-w-0 lg:sticky lg:top-24">
             <div className="card p-6">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white">

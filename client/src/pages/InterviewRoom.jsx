@@ -617,23 +617,25 @@ export default function InterviewRoom() {
 
             <div className="mt-6 border-t border-slate-100 pt-5">
               {speaking ? (
-                <div className="flex items-center gap-4 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-indigo-50/40 to-violet-50 px-4 py-3.5">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center gap-0.5 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-md shadow-indigo-600/25">
-                    <span className="eq-bar h-4 w-1 rounded-full bg-white" />
-                    <span className="eq-bar h-4 w-1 rounded-full bg-white [animation-delay:150ms]" />
-                    <span className="eq-bar h-4 w-1 rounded-full bg-white [animation-delay:300ms]" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-indigo-700">
-                      The interviewer is speaking…
-                    </p>
-                    {settings.captions && (
-                      <p className="mt-0.5 line-clamp-4 text-sm leading-relaxed text-slate-600">
-                        {captionText}
+                <div className="flex flex-col gap-3 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-indigo-50/40 to-violet-50 px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex min-w-0 items-center gap-4 sm:flex-1">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center gap-0.5 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-md shadow-indigo-600/25">
+                      <span className="eq-bar h-4 w-1 rounded-full bg-white" />
+                      <span className="eq-bar h-4 w-1 rounded-full bg-white [animation-delay:150ms]" />
+                      <span className="eq-bar h-4 w-1 rounded-full bg-white [animation-delay:300ms]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-indigo-700">
+                        The interviewer is speaking…
                       </p>
-                    )}
+                      {settings.captions && (
+                        <p className="mt-0.5 line-clamp-4 text-sm leading-relaxed text-slate-600">
+                          {captionText}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex shrink-0 gap-2">
+                  <div className="flex gap-2 sm:shrink-0">
                     <button
                       type="button"
                       onClick={handleRepeatSpeech}
@@ -723,7 +725,7 @@ export default function InterviewRoom() {
               />
 
               <div className="mt-3 flex items-center justify-between gap-3">
-                <span className="text-xs text-slate-400">
+                <span className="hidden text-xs text-slate-400 sm:block">
                   {shownAnswer.length >= 4500 ? `${shownAnswer.length}/5000 · ` : ''}
                   <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
                     Ctrl
@@ -739,7 +741,7 @@ export default function InterviewRoom() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting || !answer.trim()}
-                  className="btn btn-primary"
+                  className="btn btn-primary w-full sm:w-auto"
                 >
                   {submitting ? (
                     <>
@@ -756,10 +758,10 @@ export default function InterviewRoom() {
             </div>
           </div>
 
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex justify-center sm:justify-end">
             {confirmEnd ? (
-              <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2">
-                <span className="text-xs font-medium text-rose-700">
+              <div className="flex flex-wrap items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 sm:justify-between">
+                <span className="max-sm:basis-full max-sm:text-center text-xs font-medium text-rose-700">
                   End now? Report uses your {answered} answered{' '}
                   {answered === 1 ? 'question' : 'questions'}.
                 </span>

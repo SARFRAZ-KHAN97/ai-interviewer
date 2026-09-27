@@ -201,8 +201,8 @@ export default function Interviews() {
                   </p>
 
                   {confirming ? (
-                    <div className="relative z-20 mt-4 flex items-center justify-between gap-2 rounded-lg bg-rose-50 px-3 py-2">
-                      <span className="text-xs font-medium text-rose-700">
+                    <div className="relative z-20 mt-4 flex flex-wrap items-center justify-center gap-2 rounded-lg bg-rose-50 px-3 py-2 sm:justify-between">
+                      <span className="max-sm:basis-full max-sm:text-center text-xs font-medium text-rose-700">
                         Delete this interview?
                         {answered > 0 ? ' Answered progress will be lost.' : ''}
                       </span>

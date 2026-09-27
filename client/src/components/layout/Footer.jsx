@@ -9,8 +9,8 @@ export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-400">
       <div className="h-1 w-full bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500" />
-      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="lg:pr-8">
+      <div className="container-page grid grid-cols-2 gap-x-6 gap-y-10 py-14 sm:gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="col-span-2 sm:col-span-1 lg:pr-8">
           <Link to="/" className="flex w-fit items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-xs font-bold text-white">
               ST
@@ -24,7 +24,7 @@ export default function Footer() {
             questions, and grade your answers.
           </p>
           <span className="badge mt-4 border border-indigo-400/30 bg-indigo-500/10 text-indigo-300">
-            Powered by Gemini
+            Powered by AI
           </span>
         </div>
 
@@ -75,7 +75,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <h3 className="text-sm font-semibold text-white">
             Ready to practice?
           </h3>
@@ -91,7 +91,6 @@ export default function Footer() {
       <div className="border-t border-slate-800">
         <div className="container-page flex flex-col items-center justify-between gap-2 py-4 text-xs text-slate-500 sm:flex-row">
           <p>© {year} SkillTrace. All rights reserved.</p>
-          <p>Built with React, Express &amp; MongoDB</p>
         </div>
       </div>
     </footer>

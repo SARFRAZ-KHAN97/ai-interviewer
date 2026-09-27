@@ -30,7 +30,7 @@ function ResumeCard({ resume, confirming, deleting, onConfirm, onDelete, onCance
   const extraSkills = resume.skills.length - visibleSkills.length
 
   return (
-    <article className="card p-5">
+    <article className="card min-w-0 p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-[10px] font-bold uppercase text-white">
@@ -67,8 +67,10 @@ function ResumeCard({ resume, confirming, deleting, onConfirm, onDelete, onCance
       )}
 
       {confirming ? (
-        <div className="mt-4 flex items-center justify-between gap-2 rounded-lg bg-rose-50 px-3 py-2">
-          <span className="text-xs font-medium text-rose-700">Delete this resume?</span>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 rounded-lg bg-rose-50 px-3 py-2 sm:justify-between">
+          <span className="max-sm:basis-full max-sm:text-center text-xs font-medium text-rose-700">
+            Delete this resume?
+          </span>
           <div className="flex gap-1">
             <button
               type="button"
@@ -294,7 +296,7 @@ export default function Resumes() {
             </button>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
             {resumes.map((resume) => (
               <ResumeCard
                 key={resume.id}
