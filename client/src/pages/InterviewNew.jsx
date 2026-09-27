@@ -362,7 +362,7 @@ export default function InterviewNew() {
                 <input
                   id="questionCount"
                   type="range"
-                  min="1"
+                  min="2"
                   max="20"
                   step="1"
                   className="mt-3 w-full accent-indigo-600"
@@ -370,7 +370,7 @@ export default function InterviewNew() {
                   onChange={(event) => setQuestionCount(Number(event.target.value))}
                 />
                 <div className="mt-1 flex justify-between text-xs text-slate-400">
-                  <span>1</span>
+                  <span>2</span>
                   <span>10</span>
                   <span>20</span>
                 </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Spinner from '../components/common/Spinner'
+import { useToast } from '../context/ToastContext'
 import * as interviewService from '../services/interviewService'
 import * as resumeService from '../services/resumeService'
 
@@ -36,10 +37,13 @@ const formatDate = (iso) =>
   })
 
 export default function Interviews() {
+  const { toast } = useToast()
   const [interviews, setInterviews] = useState([])
   const [resumeNames, setResumeNames] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [confirmId, setConfirmId] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -61,6 +65,21 @@ export default function Interviews() {
       cancelled = true
     }
   }, [])
+
+  const handleDelete = async (interview) => {
+    setDeletingId(interview.id)
+    try {
+      await interviewService.remove(interview.id)
+      setInterviews((prev) => prev.filter((item) => item.id !== interview.id))
+      setConfirmId(null)
+      toast.success('Interview deleted')
+    } catch (err) {
+      toast.error(err.message)
+      setConfirmId(null)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <section className="container-page py-10">
@@ -121,13 +140,21 @@ export default function Interviews() {
               const { answered, total } = interview.progress
               const pct = total > 0 ? Math.round((answered / total) * 100) : 0
               const resumeName = resumeNames[interview.resume]
+              const isOpen =
+                interview.status === 'created' || interview.status === 'in_progress'
+              const confirming = confirmId === interview.id
+              const deleting = deletingId === interview.id
 
               return (
-                <Link
+                <div
                   key={interview.id}
-                  to={`/interviews/${interview.id}`}
-                  className="card block p-5 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+                  className="card relative p-5 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
                 >
+                  <Link
+                    to={`/interviews/${interview.id}`}
+                    className="absolute inset-0 z-10 rounded-xl"
+                    aria-label={`Open interview: ${interview.setup.targetRole}`}
+                  />
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
@@ -148,9 +175,21 @@ export default function Interviews() {
                         {formatDate(interview.createdAt)}
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-indigo-600">
-                      {actionLabels[interview.status] || 'Open'} →
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-indigo-600">
+                        {actionLabels[interview.status] || 'Open'} →
+                      </span>
+                      {isOpen && !confirming && (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmId(interview.id)}
+                          disabled={deleting}
+                          className="btn btn-ghost relative z-20 h-7 px-2 text-xs text-slate-400 hover:text-rose-600"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <h2 className="mt-3 font-semibold text-slate-900">
@@ -161,18 +200,45 @@ export default function Interviews() {
                     {interview.setup.timePerQuestionSeconds}s each
                   </p>
 
-                  <div className="mt-4 flex items-center gap-3">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
+                  {confirming ? (
+                    <div className="relative z-20 mt-4 flex items-center justify-between gap-2 rounded-lg bg-rose-50 px-3 py-2">
+                      <span className="text-xs font-medium text-rose-700">
+                        Delete this interview?
+                        {answered > 0 ? ' Answered progress will be lost.' : ''}
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setConfirmId(null)}
+                          className="btn btn-ghost h-8 px-2 text-xs"
+                          disabled={deleting}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(interview)}
+                          className="btn btn-danger h-8 px-3 text-xs"
+                          disabled={deleting}
+                        >
+                          {deleting ? 'Deleting…' : 'Delete'}
+                        </button>
+                      </div>
                     </div>
-                    <span className="text-xs font-medium text-slate-500">
-                      {answered}/{total} answered
-                    </span>
-                  </div>
-                </Link>
+                  ) : (
+                    <div className="mt-4 flex items-center gap-3">
+                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-slate-500">
+                        {answered}/{total} answered
+                      </span>
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>
