@@ -51,6 +51,11 @@ export const createInterview = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, data: { interview: toDetail(interview) } })
 })
 
+export const deleteInterview = asyncHandler(async (req, res) => {
+  await interviewService.deleteInterview(req.user, req.params.id)
+  res.json({ success: true, data: { deleted: true } })
+})
+
 export const listInterviews = asyncHandler(async (req, res) => {
   const interviews = await interviewService.listInterviews(req.user)
   res.json({ success: true, data: { interviews: interviews.map(toSummary) } })

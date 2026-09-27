@@ -2,6 +2,7 @@ import { Router } from 'express'
 
 import {
   createInterview,
+  deleteInterview,
   getInterview,
   listInterviews,
   retryReport,
@@ -18,6 +19,7 @@ router.use(protect)
 router.post('/', aiLimiter, validate(createInterviewSchema), createInterview)
 router.get('/', listInterviews)
 router.get('/:id', getInterview)
+router.delete('/:id', deleteInterview)
 router.post('/:id/report-retry', aiLimiter, retryReport)
 
 export default router

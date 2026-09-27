@@ -7,12 +7,32 @@ import {
   buildQuestionsPrompt,
   buildReportPrompt,
   buildReportResponseSchema,
+  QUESTION_SOURCES,
   QUESTIONS_RESPONSE_SCHEMA,
 } from '../utils/prompts.js'
 
 const ALLOWED_CATEGORIES = ['technical', 'behavioral', 'scenario', 'general']
 
 const clampScore = (value) => Math.round(Math.min(100, Math.max(0, value)))
+
+export const evaluateSourceCompliance = (questions, grounded) => {
+  const expected = grounded?.total ?? 0
+  const actual = questions.filter(
+    (question) => question.source === 'experience' || question.source === 'projects',
+  ).length
+  return { expected, actual, matches: expected === 0 || actual === expected }
+}
+
+export const evaluateCategoryMix = (questions, grounded) => {
+  const counts = { technical: 0, behavioral: 0, scenario: 0, general: 0 }
+  for (const question of questions) {
+    if (question.category in counts) counts[question.category] += 1
+  }
+  const remainder = Math.max(questions.length - (grounded?.total ?? 0), 0)
+  const expectedTechnical = Math.round(remainder * 0.6)
+  const matches = counts.behavioral >= 1 && counts.technical >= expectedTechnical
+  return { counts, expectedTechnical, matches }
+}
 
 const questionsResponseSchema = z.object({
   questions: z
@@ -23,6 +43,13 @@ const questionsResponseSchema = z.object({
           const normalized = value.toLowerCase()
           return ALLOWED_CATEGORIES.includes(normalized) ? normalized : 'general'
         }),
+        source: z
+          .string()
+          .catch('general')
+          .transform((value) => {
+            const normalized = value.toLowerCase().trim()
+            return QUESTION_SOURCES.includes(normalized) ? normalized : 'general'
+          }),
       }),
     )
     .min(1, 'At least one question is required'),
@@ -108,11 +135,13 @@ const parseJson = (text) => {
   return JSON.parse(cleaned)
 }
 
-export const generateInterviewQuestions = async ({ resumeText, skills, setup }) => {
+export const generateInterviewQuestions = async ({ resumeText, skills, setup, structure, grounded }) => {
   const { systemInstruction, contents, version } = buildQuestionsPrompt({
     resumeText,
     skills,
     setup,
+    structure,
+    grounded,
   })
   const ai = getClient()
 
@@ -141,6 +170,19 @@ export const generateInterviewQuestions = async ({ resumeText, skills, setup }) 
         )
       }
 
+      const compliance = evaluateSourceCompliance(questions, grounded)
+      if (!compliance.matches) {
+        console.warn(
+          `question source compliance: expected ${compliance.expected} grounded questions, model returned ${compliance.actual}`,
+        )
+      }
+
+      const mix = evaluateCategoryMix(questions, grounded)
+      console.log(
+        `question category mix: technical ${mix.counts.technical}, behavioral ${mix.counts.behavioral}, scenario ${mix.counts.scenario}, general ${mix.counts.general}` +
+          ` (targets: >=${mix.expectedTechnical} technical, >=1 behavioral)${mix.matches ? '' : ' — off target'}`,
+      )
+
       return { questions, version }
     } catch (err) {
       lastError = err
@@ -160,8 +202,8 @@ export const generateInterviewQuestions = async ({ resumeText, skills, setup }) 
   throw AppError.badGateway('AI returned an unusable response, please try again', 'AI_ERROR')
 }
 
-export const generateInterviewReport = async ({ setup, entries, skills }) => {
-  const { systemInstruction, contents, version } = buildReportPrompt({ setup, entries, skills })
+export const generateInterviewReport = async ({ setup, entries, skills, structure }) => {
+  const { systemInstruction, contents, version } = buildReportPrompt({ setup, entries, skills, structure })
   const ai = getClient()
 
   let lastError

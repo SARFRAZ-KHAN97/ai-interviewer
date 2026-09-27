@@ -62,6 +62,11 @@ const questionSchema = new mongoose.Schema(
       type: String,
       default: 'general',
     },
+    source: {
+      type: String,
+      enum: ['experience', 'projects', 'skills', 'general'],
+      default: 'general',
+    },
     timeLimitSeconds: {
       type: Number,
       required: [true, 'Question time limit is required'],

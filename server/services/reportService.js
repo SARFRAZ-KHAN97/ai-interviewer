@@ -36,7 +36,7 @@ const generateReport = async (interviewId) => {
   }
 
   try {
-    const resume = await Resume.findById(interview.resume).select('skills')
+    const resume = await Resume.findById(interview.resume).select('skills structure')
     const answers = new Map(interview.answers.map((answer) => [String(answer.question), answer]))
     const entries = interview.questions.map((question) => {
       const answer = answers.get(String(question._id))
@@ -44,6 +44,7 @@ const generateReport = async (interviewId) => {
         order: question.order,
         text: question.text,
         category: question.category,
+        source: question.source,
         durationSeconds: answer?.durationSeconds ?? 0,
         answer: answer?.text ?? '',
       }
@@ -53,6 +54,7 @@ const generateReport = async (interviewId) => {
       setup: interview.setup,
       entries,
       skills: resume?.skills ?? [],
+      structure: resume?.structure ?? null,
     })
 
     report.overallScore = data.overallScore

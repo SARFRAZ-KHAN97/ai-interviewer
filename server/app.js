@@ -11,6 +11,8 @@ import resumeRoutes from './routes/resumeRoutes.js'
 
 const app = express()
 
+app.set('trust proxy', 1)
+
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }))
 app.use(cookieParser())
 app.use(express.json({ limit: '1mb' }))

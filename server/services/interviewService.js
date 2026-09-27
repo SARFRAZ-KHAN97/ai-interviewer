@@ -4,7 +4,9 @@ import { Interview, InterviewStatus } from '../models/Interview.js'
 import { Resume, ResumeParseStatus } from '../models/Resume.js'
 import { AppError } from '../utils/AppError.js'
 import { generateInterviewQuestions } from './aiService.js'
+import { ensureResumeStructure } from './resumeService.js'
 import { startReportGeneration } from './reportService.js'
+import { computeGroundedCount } from '../utils/proportion.js'
 
 const ACTIVE_STATUSES = [InterviewStatus.CREATED, InterviewStatus.IN_PROGRESS]
 const FINISHED_STATUSES = [
@@ -47,16 +49,24 @@ export const createInterview = async (user, { resumeId, setup }) => {
     throw AppError.conflict('Resume is not ready for interviews', 'RESUME_NOT_READY')
   }
 
+  await ensureResumeStructure(resume)
+
+  const structure = resume.structure ?? null
+  const grounded = computeGroundedCount(setup.questionCount, structure)
+
   const { questions: generated } = await generateInterviewQuestions({
     resumeText: resume.parsedText,
     skills: resume.skills,
     setup,
+    structure,
+    grounded,
   })
 
   const questions = generated.map((question, index) => ({
     order: index + 1,
     text: question.text,
     category: question.category,
+    source: question.source,
     timeLimitSeconds: setup.timePerQuestionSeconds,
   }))
 
@@ -67,6 +77,19 @@ export const createInterview = async (user, { resumeId, setup }) => {
     setup,
     questions,
   })
+}
+
+export const deleteInterview = async (user, interviewId) => {
+  const interview = await loadOwnedInterview(user, interviewId)
+
+  if (!ACTIVE_STATUSES.includes(interview.status)) {
+    throw AppError.conflict(
+      'Only interviews that have not been finished can be deleted',
+      'INTERVIEW_NOT_DELETABLE',
+    )
+  }
+
+  await Interview.deleteOne({ _id: interview._id })
 }
 
 export const listInterviews = (user) =>

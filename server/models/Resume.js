@@ -31,6 +31,14 @@ const resumeSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    rawText: {
+      type: String,
+      default: '',
+    },
+    structure: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
     parseStatus: {
       type: String,
       enum: Object.values(ResumeParseStatus),

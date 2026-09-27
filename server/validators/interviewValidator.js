@@ -7,7 +7,7 @@ export const createInterviewSchema = z.object({
   setup: z.object({
     targetRole: z.string().trim().min(2, 'Target role is required').max(80, 'Target role is too long'),
     difficulty: z.enum(Object.values(InterviewDifficulty)).default(InterviewDifficulty.MEDIUM),
-    questionCount: z.number().int().min(1).max(20).default(5),
+    questionCount: z.number().int().min(2, 'At least 2 questions are required').max(20).default(5),
     timePerQuestionSeconds: z.number().int().min(15).max(600).default(60),
     language: z.string().trim().min(2).max(30).default('en'),
   }),
